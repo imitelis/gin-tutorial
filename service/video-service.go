@@ -1,29 +1,42 @@
 package service
 
-import "gin-tutorial/entity"
-
-//save the videos and get the list of existing videos
+import (
+	"gin-tutorial/entity"
+	"gin-tutorial/repository"
+)
 
 type VideoService interface {
-	Save(entity.Video) entity.Video
+	Save(entity.Video) error
+	Update(entity.Video) error
+	Delete(entity.Video) error
 	FindAll() []entity.Video
 }
 
-// struct to implement the interface
 type videoService struct {
-	videos []entity.Video
+	repository repository.VideoRepository
 }
 
-func New() VideoService {
-	return &videoService{}
-
+func New(videoRepository repository.VideoRepository) VideoService {
+	return &videoService{
+		repository: videoRepository,
+	}
 }
-func (
-	service *videoService) Save(video entity.Video) entity.Video {
-	service.videos = append(service.videos, video)
-	return video
+
+func (service *videoService) Save(video entity.Video) error {
+	service.repository.Save(video)
+	return nil
+}
+
+func (service *videoService) Update(video entity.Video) error {
+	service.repository.Update(video)
+	return nil
+}
+
+func (service *videoService) Delete(video entity.Video) error {
+	service.repository.Delete(video)
+	return nil
 }
 
 func (service *videoService) FindAll() []entity.Video {
-	return service.videos
+	return service.repository.FindAll()
 }

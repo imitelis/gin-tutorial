@@ -1,8 +1,10 @@
 package service
 
 import (
-	"gin-tutorial/entity"
 	"testing"
+
+	"gin-tutorial/entity"
+	"gin-tutorial/repository"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -10,7 +12,7 @@ import (
 const (
 	TITLE       = "Video Title"
 	DESCRIPTION = "Video Description"
-	URL         = "https://youtu.be/JgW-i22QjgHQ"
+	URL         = "https://youtu.be/JgW-i2QjgHQ"
 )
 
 func getVideo() entity.Video {
@@ -22,7 +24,9 @@ func getVideo() entity.Video {
 }
 
 func TestFindAll(t *testing.T) {
-	service := New()
+	videoRepo := repository.NewVideoRepository()
+
+	service := New(videoRepo)
 
 	service.Save(getVideo())
 

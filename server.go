@@ -6,21 +6,24 @@ import (
 
 	"gin-tutorial/controller"
 	"gin-tutorial/middlewares"
+	"gin-tutorial/repository"
 	"gin-tutorial/service"
 
 	"github.com/gin-gonic/gin"
 )
 
 var (
-	videoService service.VideoService = service.New()
-	loginService service.LoginService = service.NewLoginService()
-	jwtService   service.JWTService   = service.NewJWTService()
+	videoRepository repository.VideoRepository = repository.NewVideoRepository()
+	videoService    service.VideoService       = service.New(videoRepository)
+	loginService    service.LoginService       = service.NewLoginService()
+	jwtService      service.JWTService         = service.NewJWTService()
 
 	videoController controller.VideoController = controller.New(videoService)
 	loginController controller.LoginController = controller.NewLoginController(loginService, jwtService)
 )
 
 func main() {
+	defer videoRepository.CloseDB()
 
 	server := gin.New()
 
@@ -54,10 +57,31 @@ func main() {
 			if err != nil {
 				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			} else {
-				ctx.JSON(http.StatusOK, gin.H{"message": "Video Input is Valid!!"})
+				ctx.JSON(http.StatusOK, gin.H{"message": "Success!"})
 			}
 
 		})
+
+		apiRoutes.PUT("/videos/:id", func(ctx *gin.Context) {
+			err := videoController.Update(ctx)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			} else {
+				ctx.JSON(http.StatusOK, gin.H{"message": "Success!"})
+			}
+
+		})
+
+		apiRoutes.DELETE("/videos/:id", func(ctx *gin.Context) {
+			err := videoController.Delete(ctx)
+			if err != nil {
+				ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			} else {
+				ctx.JSON(http.StatusOK, gin.H{"message": "Success!"})
+			}
+
+		})
+
 	}
 
 	// The "/view" endpoints are public (no Authorization required)
