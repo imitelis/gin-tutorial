@@ -1,0 +1,11 @@
+{
+    "AWSEBDockerrunVersion": "1",
+    "Image": {
+        "Name": "username/gin-go"
+    },
+    "Ports": [
+        {
+            "ContainerPort": "5000"
+        }
+    ]
+}

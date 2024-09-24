@@ -1,0 +1,30 @@
+stages:
+  - compile
+  - test
+  - deploy
+
+build:
+  stage: compile
+  image: golang:latest
+  script:
+    - go get -d -v
+    - go build -o bin/gin-go -v .
+
+test:
+  stage: test
+  image: golang:latest
+  script:
+    - go test service/*.go
+
+staging:
+  stage: deploy
+  script:
+    - apt-get update -qy
+    - apt-get install -y ruby-dev
+    - gem install dpl
+    - dpl --provider=heroku --app=my-video-app --api-key=$HEROKU_API_KEY
+  environment:
+    name: Staging
+    url: https://my-video-app.herokuapp.com/
+  only:
+    - ci-cd
